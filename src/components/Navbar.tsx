@@ -1,4 +1,4 @@
-import { Brain, History, Home, LogOut, PlusCircle } from 'lucide-react';
+import { Brain, History, Home, PlusCircle } from 'lucide-react';
 import type { Page } from '@/types';
 
 interface NavbarProps {
@@ -46,16 +46,6 @@ export default function Navbar({ currentPage, onNavigate }: NavbarProps) {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs text-slate-400">System Active</span>
-            </div>
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/[0.03] transition-all">
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Sign Out</span>
-            </button>
-          </div>
         </div>
 
         <div className="flex md:hidden items-center gap-1 pb-3 -mx-1 overflow-x-auto scrollbar-thin">
