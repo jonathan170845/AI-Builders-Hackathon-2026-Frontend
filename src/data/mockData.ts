@@ -43,21 +43,20 @@ export const mockAnalysisResult: AnalysisResult = {
   id: 'analysis-001',
   decisionTitle: 'Scale on-demand grocery delivery to 5 new cities with heavy promotional subsidies',
   summary:
-    'The decision to aggressively expand with promotional subsidies rests on several untested assumptions about unit economics, customer retention, and competitive dynamics. Historical analogues suggest that subsidy-driven growth in low-margin logistics businesses has led to catastrophic failures when contribution margins remain negative. The current financial model shows a deeply negative operating profit driven by per-order subsidies and delivery costs that exceed contribution margin. Before scaling, the unit economics must be validated in a single controlled market.',
+    'Illustrative demo: fictional pilots support customer retention under a partial subsidy reduction and demand in tested neighborhoods. Three other assumptions still need evidence. These pilot results do not establish profitability or validate a full five-city expansion. Review unit economics and competitive responses before scaling.',
   assumptions: [
     {
       id: 'A1',
-      text: 'Customers will continue ordering at the same frequency after promotional subsidies are reduced or removed.',
-      assessment: 'Insufficient Evidence',
+      text: 'Customers in the pilot cohort maintain order frequency after a 50% reduction in promotional subsidies.',
+      assessment: 'Well Supported',
       summary:
-        'No data exists on post-subsidy retention. Historical analogues (Homejoy, Sprig) show steep drop-off when subsidies end. The assumption that promotional frequency translates to habitual usage is untested.',
+        'Illustrative evidence: a fictional four-week controlled pilot found stable order frequency after a 50% subsidy reduction. This supports the claim for the tested cohort, not full subsidy removal or every new city.',
       evidenceGaps: [
-        'No cohort retention data post-subsidy removal',
-        'No A/B test of unsubsidized pricing in current markets',
-        'No survey data on price sensitivity of current users',
+        'Full removal of subsidies has not been tested',
+        'Retention beyond the four-week pilot remains unknown',
       ],
       validationExperiment:
-        'Run a controlled cohort study: reduce subsidies by 50% for one user segment over 4 weeks and measure order frequency compared to a control group.',
+        'Repeat the pilot in a new city and test a further subsidy reduction before assuming the result applies across all markets.',
     },
     {
       id: 'A2',
@@ -75,17 +74,16 @@ export const mockAnalysisResult: AnalysisResult = {
     },
     {
       id: 'A3',
-      text: 'The target cities have sufficient demand density to support a viable delivery operation.',
-      assessment: 'Insufficient Evidence',
+      text: 'The tested launch neighborhoods can reach the planned daily order volume.',
+      assessment: 'Well Supported',
       summary:
-        'Demand density assumptions are based on top-down population data, not bottom-up order-intent data. Comparable companies that entered secondary markets without density validation (Deliveroo in smaller UK cities) faced unit economics collapse.',
+        'Illustrative evidence: fictional paid-order pilots reached the planned daily volume in the tested neighborhoods. This supports local demand, but does not establish citywide coverage or financial viability.',
       evidenceGaps: [
-        'No order-intent surveys conducted in target cities',
-        'No competitive density mapping for target cities',
-        'No data on average order values in target markets',
+        'Demand outside the pilot neighborhoods is not yet validated',
+        'Seasonal demand and long-term repeat orders are not yet measured',
       ],
       validationExperiment:
-        'Run a 2-week pre-launch demand test using a landing page with waitlist sign-ups in each target city to gauge organic demand and estimate order density.',
+        'Expand the paid-order pilot to additional neighborhoods and track repeat orders before committing to a citywide launch.',
     },
     {
       id: 'A4',
@@ -117,7 +115,7 @@ export const mockAnalysisResult: AnalysisResult = {
     },
   ],
   directEvidenceCoverage:
-    '0 of 5 critical assumptions are supported by direct evidence. All assumptions are currently rated as Insufficient Evidence. No internal data, external studies, or validated experiments were found to support any assumption.',
+    'Illustrative demo: 2 of 5 assumptions are marked Well Supported using fictional pilot evidence, giving 40% coverage. The remaining 3 need further validation. These are sample records, not real research findings.',
   financialWarnings: ['Negative Operating Profit'],
   financialResults: {
     contributionMargin: 15000000,

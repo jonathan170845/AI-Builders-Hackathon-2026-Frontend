@@ -11,6 +11,7 @@ import type { FinancialInputs, Page } from '@/types';
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('landing');
   const [analysisResult, setAnalysisResult] = useState(mockAnalysisResult);
+  const [viewingDemo, setViewingDemo] = useState(false);
 
   const navigate = useCallback((page: Page) => {
     setCurrentPage(page);
@@ -18,6 +19,7 @@ function App() {
   }, []);
 
   const handleAnalyze = (decision: string, financials: FinancialInputs) => {
+    setViewingDemo(false);
     setAnalysisResult({
       ...mockAnalysisResult,
       decisionTitle: decision,
@@ -27,14 +29,15 @@ function App() {
   };
 
   const handleViewAnalysis = () => {
+    setViewingDemo(false);
     navigate('results');
   };
 
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className="min-h-screen">
       <Navbar currentPage={currentPage} onNavigate={navigate} />
       {currentPage === 'landing' && (
-        <LandingPage onNavigate={(page) => navigate(page)} />
+        <LandingPage onNavigate={(page) => navigate(page)} onViewDemo={() => { setViewingDemo(true); navigate('results'); }} />
       )}
       {currentPage === 'input' && (
         <DecisionInputPage
@@ -47,8 +50,9 @@ function App() {
       )}
       {currentPage === 'results' && (
         <ResultsPage
-          result={analysisResult}
-          onBack={() => navigate('history')}
+          result={viewingDemo ? mockAnalysisResult : analysisResult}
+          backLabel={viewingDemo ? 'Back to home' : 'Back to history'}
+          onBack={() => navigate(viewingDemo ? 'landing' : 'history')}
         />
       )}
       {currentPage === 'history' && (

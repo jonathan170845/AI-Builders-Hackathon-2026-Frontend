@@ -1,4 +1,4 @@
-import { Brain, History, Home, PlusCircle } from 'lucide-react';
+import { Compass, History, Home, PlusCircle } from 'lucide-react';
 import type { Page } from '@/types';
 
 interface NavbarProps {
@@ -14,15 +14,15 @@ export default function Navbar({ currentPage, onNavigate }: NavbarProps) {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-navy-950/80 backdrop-blur-xl">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-400/20 bg-[#142238]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <button
             onClick={() => onNavigate('landing')}
             className="flex items-center gap-2.5 group"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-violet-500 shadow-lg shadow-cyan-500/20 transition-transform group-hover:scale-105">
-              <Brain className="h-5 w-5 text-navy-950" strokeWidth={2.5} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-300 shadow-lg shadow-cyan-500/20 transition-transform group-hover:scale-105">
+              <Compass className="h-5 w-5 text-navy-950" strokeWidth={2.5} />
             </div>
             <span className="font-display text-lg font-bold text-white tracking-tight">
               Veritas

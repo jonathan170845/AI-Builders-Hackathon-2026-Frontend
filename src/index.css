@@ -8,10 +8,11 @@
   }
 
   body {
-    @apply bg-navy-950 text-slate-300 font-sans antialiased;
+    @apply text-slate-300 font-sans antialiased;
+    background-color: #293c56;
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.08), transparent),
-      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(139, 92, 246, 0.05), transparent);
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.12), transparent),
+      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(139, 92, 246, 0.08), transparent);
     background-attachment: fixed;
   }
 
@@ -21,12 +22,46 @@
 }
 
 @layer components {
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 500ms ease, transform 500ms ease;
+  }
+  .scroll-reveal.is-visible { opacity: 1; transform: none; }
+  .scroll-reveal.is-visible .feature-reveal { animation: report-enter 450ms ease-out both; }
+  .report-paper {
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(20, 34, 56, 0.035) 39px, rgba(20, 34, 56, 0.035) 40px);
+  }
+  .assumption-disclosure {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition: grid-template-rows 240ms ease, opacity 200ms ease, visibility 240ms;
+  }
+  .assumption-disclosure.is-open { grid-template-rows: 1fr; opacity: 1; visibility: visible; }
+  .report-panel-enter { animation: report-enter 220ms ease-out both; }
+  @keyframes report-enter {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-reveal { opacity: 1; transform: none; transition: none; }
+    .assumption-disclosure { transition: none; }
+    .report-panel-enter { animation: none; }
+    .scroll-reveal.is-visible .feature-reveal { animation: none; }
+  }
+
+  .back-button {
+    @apply inline-flex items-center gap-2 rounded-xl border border-slate-400/30 bg-[#142238] px-4 py-2.5 text-sm font-medium text-slate-200 shadow-sm transition-colors hover:bg-[#203550] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300;
+  }
+
   .glass-card {
-    @apply bg-navy-850/80 backdrop-blur-xl border border-white/[0.06] rounded-2xl;
+    @apply bg-[#17243a] backdrop-blur-xl border border-slate-400/25 rounded-2xl shadow-lg shadow-black/20;
   }
 
   .glass-card-hover {
-    @apply glass-card transition-all duration-300 hover:border-white/[0.12] hover:bg-navy-800/80;
+    @apply glass-card transition-all duration-300 hover:border-cyan-400/40 hover:bg-[#1d2e48];
   }
 
   .gradient-text {
@@ -38,7 +73,7 @@
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-slate-300 border border-white/10 hover:bg-white/5 hover:text-white transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-slate-200 bg-slate-800/70 border border-slate-400/30 hover:bg-slate-700/70 hover:text-white transition-all duration-200;
   }
 
   .input-field {
@@ -46,11 +81,28 @@
   }
 
   .section-label {
-    @apply text-xs font-semibold uppercase tracking-widest text-slate-500;
+    @apply text-xs font-semibold uppercase tracking-widest text-slate-400;
   }
 }
 
 @layer utilities {
+  .typing-caret {
+    display: inline-block;
+    width: 2px;
+    height: 0.85em;
+    margin-left: 0.06em;
+    background: #67e8f9;
+    animation: caret-blink 1s step-end infinite;
+  }
+
+  @keyframes caret-blink {
+    50% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .typing-caret { display: none; }
+  }
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
     height: 6px;
