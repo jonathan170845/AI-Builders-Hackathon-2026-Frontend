@@ -108,20 +108,20 @@ export default function LandingPage({ onNavigate, onViewDemo }: LandingPageProps
           </div>
         </section>
 
-        <Reveal><section className="report-paper border-y border-white/10 bg-[#edf1ee] text-[#142238]">
+        <Reveal><section className="report-paper border-y border-white/10 bg-[#243447] text-white">
           <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[0.9fr_1.4fr] lg:gap-20 lg:px-8 lg:py-16">
             <div>
-              <div className="mb-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-800"><span className="h-px w-8 bg-teal-700" /> Beyond a gut feeling</div>
-              <h2 className="font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">A clearer view.<br /><span className="text-teal-700">A better next step.</span></h2>
-              <p className="mt-6 max-w-md text-base leading-relaxed text-slate-600">Big decisions rarely come with complete information. Veritas helps you see what holds up, what could fail, and what to test next.</p>
-              <button onClick={() => onNavigate('input')} className="mt-7 inline-flex items-center gap-3 border-b border-teal-700 pb-2 text-sm font-semibold text-teal-800 transition-colors hover:text-teal-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">Take a closer look <ArrowRight className="h-4 w-4" /></button>
+              <div className="mb-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200"><span className="h-px w-8 bg-teal-300" /> Beyond a gut feeling</div>
+              <h2 className="font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">A clearer view.<br /><span className="text-teal-300">A better next step.</span></h2>
+              <p className="mt-6 max-w-md text-base leading-relaxed text-slate-300">Big decisions rarely come with complete information. Veritas helps you see what holds up, what could fail, and what to test next.</p>
+              <button onClick={() => onNavigate('input')} className="mt-7 inline-flex items-center gap-3 border-b border-teal-300 pb-2 text-sm font-semibold text-teal-200 transition-colors hover:text-teal-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-300">Take a closer look <ArrowRight className="h-4 w-4" /></button>
             </div>
-            <div className="divide-y divide-slate-300">
+            <div className="divide-y divide-white/10">
               {capabilities.map(({ icon: Icon, title, text }, index) => (
                 <div key={title} style={{ animationDelay: `${index * 90}ms` }} className="feature-reveal group grid grid-cols-[2rem_1fr] gap-4 py-6 first:pt-0 last:pb-0 sm:grid-cols-[2rem_1fr_3rem]">
-                  <span className="pt-1 font-mono text-sm text-teal-700">0{index + 1}</span>
-                  <div><h3 className="font-display text-xl font-semibold">{title}</h3><p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-600">{text}</p></div>
-                  <div className="hidden h-11 w-11 items-center justify-center rounded-full border border-teal-800/20 text-teal-700 transition-colors group-hover:bg-teal-700 group-hover:text-white sm:flex"><Icon className="h-5 w-5" /></div>
+                  <span className="pt-1 font-mono text-sm text-teal-300">0{index + 1}</span>
+                  <div><h3 className="font-display text-xl font-semibold">{title}</h3><p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-300">{text}</p></div>
+                  <div className="hidden h-11 w-11 items-center justify-center rounded-full border border-teal-300/30 text-teal-300 transition-colors group-hover:bg-teal-300 group-hover:text-[#142238] sm:flex"><Icon className="h-5 w-5" /></div>
                 </div>
               ))}
             </div>

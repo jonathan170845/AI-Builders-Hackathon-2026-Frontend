@@ -64,22 +64,27 @@ export default function DecisionInputPage({ onBack, onAnalyze }: DecisionInputPa
         <button onClick={onBack} className="back-button mb-8"><ArrowLeft className="h-4 w-4" /> Back to home</button>
         <div className="mb-10"><div className="section-label mb-4">New stress test</div><h1 className="font-display text-4xl sm:text-5xl font-semibold tracking-tight text-white">What decision are you considering?</h1><p className="mt-4 text-lg text-slate-400">Be as specific as possible. Include the action, scope, timing, and the outcome you expect.</p></div>
         <div className="space-y-5">
-          <div className="glass-card p-6 sm:p-8"><div className="flex items-center gap-3 mb-5"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-200"><Signpost aria-hidden="true" className="h-6 w-6" strokeWidth={1.75} /></div><div><div className="flex flex-wrap items-center gap-2.5"><h2 id="decision-label" className="font-display text-base font-semibold text-white">Decision statement</h2><span className="inline-flex items-center gap-1.5 rounded-full bg-amber-200/10 px-3 py-1 text-xs font-medium text-amber-200 ring-1 ring-inset ring-amber-200/20"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-amber-300" />Required</span></div><p className="text-sm text-slate-300">Describe the decision you want to stress-test</p></div></div><textarea required aria-labelledby="decision-label" value={decision} onChange={(event) => setDecision(event.target.value)} rows={5} className="input-field resize-none text-base leading-relaxed" placeholder="For example: We will expand our B2B SaaS product into the European market within the next 6 months..." /><div className="mt-3 flex items-start gap-2 text-sm text-slate-300"><CircleHelp className="h-3.5 w-3.5 shrink-0 mt-0.5" /> The clearer your decision, the more precise the assumptions and evidence will be.</div></div>
-          <div className="glass-card overflow-hidden"><button onClick={() => setShowFinancials((current) => !current)} className="flex w-full items-center justify-between p-6 sm:px-8 hover:bg-white/[0.02] transition-colors"><div className="flex items-center gap-3"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-200"><ChartNoAxesCombined aria-hidden="true" className="h-6 w-6" strokeWidth={1.75} /></div><div className="text-left"><div className="flex flex-wrap items-center gap-2.5"><h2 className="font-display text-base font-semibold text-white">Financial inputs</h2><span className="inline-flex items-center rounded-full bg-slate-300/10 px-3 py-1 text-xs font-medium text-slate-200 ring-1 ring-inset ring-slate-300/20">Optional</span></div><p className="text-sm text-slate-300">Add numbers to run a financial stress test</p></div></div>{showFinancials ? <ChevronUp className="h-5 w-5 text-slate-500" /> : <ChevronDown className="h-5 w-5 text-slate-500" />}</button>{showFinancials && <div className="border-t border-white/[0.05] px-6 pb-7 pt-6 sm:px-8"><div className="grid sm:grid-cols-2 gap-x-5 gap-y-5">{financialFields.map(({ key, label, suffix, help }) => (
+          <div className="glass-card p-6 sm:p-8"><div className="flex items-center gap-3 mb-5"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-200"><Signpost aria-hidden="true" className="h-6 w-6" strokeWidth={1.75} /></div><div><div className="flex flex-wrap items-center gap-2.5"><h2 id="decision-label" className="font-display text-base font-semibold text-white">Decision statement</h2><span className="inline-flex items-center gap-1.5 rounded-full bg-amber-200/10 px-3 py-1 text-xs font-medium text-red-500 ring-1 ring-inset ring-cyan-200/20"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-red-500" />Required</span></div><p className="text-sm text-slate-300">Describe the decision you want to stress-test</p></div></div><textarea required aria-labelledby="decision-label" value={decision} onChange={(event) => setDecision(event.target.value)} rows={5} className="input-field resize-none text-base leading-relaxed" placeholder="For example: We will expand our B2B SaaS product into the European market within the next 6 months..." /><div className="mt-3 flex items-start gap-2 text-sm text-slate-300"><CircleHelp className="h-3.5 w-3.5 shrink-0 mt-0.5" /> The clearer your decision, the more precise the assumptions and evidence will be.</div></div>
+          <div className="glass-card overflow-visible"><button onClick={() => setShowFinancials((current) => !current)} className="flex w-full items-center justify-between p-6 sm:px-8 hover:bg-white/[0.02] transition-colors"><div className="flex items-center gap-3"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-200"><ChartNoAxesCombined aria-hidden="true" className="h-6 w-6" strokeWidth={1.75} /></div><div className="text-left"><div className="flex flex-wrap items-center gap-2.5"><h2 className="font-display text-base font-semibold text-white">Financial inputs</h2><span className="inline-flex items-center rounded-full bg-slate-300/10 px-3 py-1 text-xs font-medium text-slate-200 ring-1 ring-inset ring-slate-300/20">Optional</span></div><p className="text-sm text-slate-300">Add numbers to run a financial stress test</p></div></div>{showFinancials ? <ChevronUp className="h-5 w-5 text-slate-500" /> : <ChevronDown className="h-5 w-5 text-slate-500" />}</button>{showFinancials && <div className="border-t border-white/[0.05] px-6 pb-7 pt-6 sm:px-8"><div className="grid sm:grid-cols-2 gap-x-5 gap-y-5">{financialFields.map(({ key, label, suffix, help }) => (
   <div key={key} className="min-w-0">
     <div className="mb-2 flex items-center justify-between gap-2">
       <div className="flex items-center gap-1">
         <label htmlFor={`financial-${key}`} className="text-base font-medium text-slate-200">{label}</label>
-        <button
-          type="button"
-          aria-label={`Help for ${label}`}
-          aria-expanded={openHelp === key}
-          aria-controls={`help-${key}`}
-          onClick={() => setOpenHelp((current) => current === key ? null : key)}
-          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-cyan-200 transition-colors hover:bg-cyan-400/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
-        >
-          <CircleHelp aria-hidden="true" className="h-4 w-4" />
-        </button>
+        <div className="relative">
+          <button
+            type="button"
+            aria-label={`Help for ${label}`}
+            aria-expanded={openHelp === key}
+            aria-controls={`help-${key}`}
+            onClick={() => setOpenHelp((current) => current === key ? null : key)}
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-cyan-200 transition-colors hover:bg-cyan-400/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+          >
+            <CircleHelp aria-hidden="true" className="h-4 w-4" />
+          </button>
+          <div id={`help-${key}`} hidden={openHelp !== key} className="absolute left-0 top-full z-20 mt-2 w-72 max-w-[calc(100vw-3rem)] whitespace-normal break-words rounded-lg border border-cyan-400/20 bg-[#102037] p-3 text-base leading-relaxed text-slate-200 shadow-xl shadow-black/30 sm:left-full sm:top-1/2 sm:mt-0 sm:ml-2 sm:-translate-y-1/2">
+            {financialExplanations[key]}
+          </div>
+        </div>
       </div>
       <span className="shrink-0 text-sm text-slate-300">{suffix}</span>
     </div>
@@ -101,9 +106,6 @@ export default function DecisionInputPage({ onBack, onAnalyze }: DecisionInputPa
       <p className="mt-2 text-sm text-slate-300">Choose a step, then use − or +. You can also type directly in the field.</p>
     </div>
     <p id={`hint-${key}`} className="mt-1.5 text-sm text-slate-300">{help}</p>
-    <div id={`help-${key}`} hidden={openHelp !== key} className="mt-3 rounded-lg border border-cyan-400/20 bg-[#102037] p-3 text-base leading-relaxed text-slate-200">
-      {financialExplanations[key]}
-    </div>
   </div>
 ))}</div><div className="mt-7 rounded-xl border border-cyan-400/10 bg-cyan-400/[0.04] p-4 flex items-start gap-3"><Lightbulb className="h-4 w-4 text-cyan-400 mt-0.5 shrink-0" /><p className="text-sm leading-relaxed text-slate-300">Financial stress testing is most useful when inputs reflect your current operating reality, not your target state.</p></div></div>}</div>
           <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pt-3"><p className="text-sm text-slate-300">Analysis typically takes 2 – 4 minutes</p><button onClick={() => onAnalyze(decision, financials)} disabled={!decision.trim()} className="btn-primary w-full sm:w-auto px-8 py-3.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100">Analyze Decision <ArrowRight className="h-4 w-4" /></button></div>
