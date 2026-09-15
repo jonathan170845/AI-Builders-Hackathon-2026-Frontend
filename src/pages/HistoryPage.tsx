@@ -1,14 +1,286 @@
-import { formatReportLabel } from '@/utils/reportLabel';
-import { AlertTriangle, ArrowRight, CheckCircle2, Clock3, XCircle } from 'lucide-react';
-import type { HistoryEntry } from '@/types';
-import { mockHistory } from '@/data/mockData';
+import { useEffect, useRef, useState } from 'react';
 
-interface HistoryPageProps { onViewAnalysis: (id: string) => void; onNewAnalysis: () => void; }
+import {
+  errorMessage,
+  listAnalyses,
+} from '@/api/analyses';
 
-const statusConfig = { Completed: { icon: CheckCircle2, className: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' }, Processing: { icon: Clock3, className: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20' }, Failed: { icon: XCircle, className: 'text-red-400 bg-red-400/10 border-red-400/20' } };
+import type {
+  AnalysisHistoryItem,
+  AnalysisStatus,
+} from '@/api/analyses';
 
-function HistoryStatus({ status }: { status: HistoryEntry['status'] }) { const config = statusConfig[status]; const Icon = config.icon; return <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${config.className}`}><Icon className="h-3.5 w-3.5" />{status}</span>; }
+const statusLabels: Record<AnalysisStatus, string> = {
+  queued: 'Queued',
+  processing: 'Processing',
+  completed: 'Completed',
+  failed: 'Failed',
+};
 
-export default function HistoryPage({ onViewAnalysis, onNewAnalysis }: HistoryPageProps) {
-  return <div className="min-h-screen pt-28 pb-20"><main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-10"><div><div className="section-label mb-4">Your workspace</div><h1 className="font-display text-4xl sm:text-5xl font-semibold tracking-tight text-white">Analysis history</h1><p className="mt-4 text-lg text-slate-400">Review decisions you’ve put through the Veritas lens.</p></div><button onClick={onNewAnalysis} className="btn-primary shrink-0"><span className="text-lg leading-none">+</span> New analysis</button></div><div className="glass-card overflow-hidden"><div className="hidden xl:grid grid-cols-[minmax(0,1fr)_100px_100px_125px_120px_90px] gap-4 px-6 py-4 border-b border-white/[0.05] text-xs font-semibold uppercase tracking-widest text-slate-400"><span>Decision</span><span>Date</span><span>Assumptions</span><span>Financial warnings</span><span>Status</span><span className="text-right">Details</span></div><div className="divide-y divide-white/[0.04]">{mockHistory.map((entry) => <div key={entry.id} className="grid xl:grid-cols-[minmax(0,1fr)_100px_100px_125px_120px_90px] gap-4 items-center px-6 py-5 hover:bg-white/[0.02] transition-colors"><div className="min-w-0"><div className="flex items-center gap-2 mb-1"><span className="text-xs font-semibold text-slate-200">{formatReportLabel(entry.id)}</span></div><p title={entry.decision} className="line-clamp-2 break-words text-sm font-medium leading-relaxed text-slate-200">{entry.decision}</p><div className="flex flex-wrap xl:hidden items-center gap-x-4 gap-y-2 mt-3"><span className="text-xs text-slate-400">{entry.date}</span><span className="text-xs text-slate-400">{entry.assumptionCount} assumptions</span>{entry.financialWarnings > 0 && <span className="inline-flex items-center gap-1 text-xs text-amber-400"><AlertTriangle className="h-3 w-3" /> {entry.financialWarnings} warning{entry.financialWarnings > 1 ? 's' : ''}</span>}</div></div><span className="hidden xl:block text-sm text-slate-400">{entry.date}</span><span className="hidden xl:block text-sm text-slate-400">{entry.assumptionCount} <span className="text-slate-400">found</span></span><span className="hidden xl:inline-flex items-center gap-1.5 text-sm text-slate-400">{entry.financialWarnings > 0 ? <><AlertTriangle className="h-3.5 w-3.5 text-amber-400" /> {entry.financialWarnings} warning{entry.financialWarnings > 1 ? 's' : ''}</> : <span className="text-slate-400">None</span>}</span><div className="flex flex-wrap items-center justify-between gap-4 xl:contents"><HistoryStatus status={entry.status} /><div className="flex justify-end">{entry.status === 'Completed' && <button onClick={() => onViewAnalysis(entry.id)} aria-label={`View analysis: ${entry.decision}`} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-400/30 px-3 py-2 text-xs font-medium text-cyan-200 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 transition-colors">View <ArrowRight className="h-3.5 w-3.5" /></button>}</div></div></div>)}</div></div><p className="mt-5 text-center text-xs text-slate-400">Showing {mockHistory.length} analyses · Decisions are stored securely in your workspace</p></main></div>;
+interface HistoryPageProps {
+  onViewAnalysis: (id: string) => void;
+  onNewAnalysis: () => void;
+}
+
+export default function HistoryPage({
+  onViewAnalysis,
+  onNewAnalysis,
+}: HistoryPageProps) {
+  const [items, setItems] = useState<AnalysisHistoryItem[]>([]);
+  const [cursor, setCursor] = useState<string | null>(null);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [refresh, setRefresh] = useState(0);
+
+  const controller = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    const request = new AbortController();
+
+    controller.current = request;
+
+    setLoading(true);
+    setError(null);
+
+    listAnalyses(undefined, request.signal)
+      .then((page) => {
+        if (request.signal.aborted) {
+          return;
+        }
+
+        setItems(page.items);
+        setCursor(page.nextCursor);
+      })
+      .catch((reason) => {
+        if (!request.signal.aborted) {
+          setError(errorMessage(reason));
+        }
+      })
+      .finally(() => {
+        if (!request.signal.aborted) {
+          setLoading(false);
+          controller.current = null;
+        }
+      });
+
+    return () => {
+      request.abort();
+      controller.current?.abort();
+    };
+  }, [refresh]);
+
+  const loadMore = async () => {
+    if (!cursor || controller.current) {
+      return;
+    }
+
+    const request = new AbortController();
+
+    controller.current = request;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const page = await listAnalyses(
+        cursor,
+        request.signal,
+      );
+
+      if (request.signal.aborted) {
+        return;
+      }
+
+      setItems((previous) => [
+        ...previous,
+        ...page.items.filter(
+          (item) =>
+            !previous.some(
+              (oldItem) => oldItem.id === item.id,
+            ),
+        ),
+      ]);
+
+      setCursor(page.nextCursor);
+    } catch (reason) {
+      if (!request.signal.aborted) {
+        setError(errorMessage(reason));
+      }
+    } finally {
+      if (!request.signal.aborted) {
+        setLoading(false);
+        controller.current = null;
+      }
+    }
+  };
+
+  const handleRetry = () => {
+    if (cursor && items.length > 0) {
+      void loadMore();
+      return;
+    }
+
+    setRefresh((value) => value + 1);
+  };
+
+  const getStatusClassName = (
+    status: AnalysisStatus,
+  ) => {
+    if (status === 'failed') {
+      return 'text-red-300';
+    }
+
+    if (status === 'completed') {
+      return 'text-emerald-300';
+    }
+
+    return 'text-cyan-200';
+  };
+
+  const getActionLabel = (
+    status: AnalysisStatus,
+  ) => {
+    if (status === 'completed') {
+      return 'View report';
+    }
+
+    if (status === 'failed') {
+      return 'View error';
+    }
+
+    return 'View progress';
+  };
+
+  return (
+    <div className="min-h-screen pb-20 pt-28">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <div className="section-label mb-4">
+              Your workspace
+            </div>
+
+            <h1 className="font-display text-4xl text-white">
+              Analysis history
+            </h1>
+
+            <p className="mt-4 text-slate-300">
+              Reopen reports and track ongoing analyses.
+            </p>
+          </div>
+
+          <button
+            className="btn-primary"
+            onClick={onNewAnalysis}
+          >
+            + New analysis
+          </button>
+        </div>
+
+        {error && (
+          <div
+            role="alert"
+            className="glass-card mb-5 p-5 text-amber-200"
+          >
+            <p>{error}</p>
+
+            <button
+              className="btn-secondary mt-3"
+              onClick={handleRetry}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        <div className="glass-card divide-y divide-white/10">
+          {!loading &&
+            !error &&
+            items.length === 0 && (
+              <p className="p-8 text-slate-300">
+                No analyses yet. Create your first
+                analysis to get started.
+              </p>
+            )}
+
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-cyan-200">
+                  Analysis report
+                </p>
+
+                <h2
+                  className="mt-2 max-w-4xl break-words text-base font-medium leading-6 text-white"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {item.decision}
+                </h2>
+
+                <p className="mt-2 text-sm text-slate-400">
+                  {new Date(
+                    item.createdAt,
+                  ).toLocaleString()}
+                  {' · '}
+                  {item.assumptionCount} assumptions
+                  {' · '}
+                  {item.financialWarningCount}{' '}
+                  financial warnings
+                </p>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-4">
+                <span
+                  className={getStatusClassName(
+                    item.status,
+                  )}
+                >
+                  {statusLabels[item.status]}
+                </span>
+
+                <button
+                  className="btn-secondary"
+                  onClick={() =>
+                    onViewAnalysis(item.id)
+                  }
+                  aria-label={`Open analysis: ${item.decision}`}
+                >
+                  {getActionLabel(item.status)}
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {loading && (
+            <p
+              role="status"
+              className="p-6 text-cyan-200"
+            >
+              Loading history...
+            </p>
+          )}
+        </div>
+
+        {cursor && (
+          <button
+            disabled={loading}
+            className="btn-secondary mt-6 disabled:opacity-40"
+            onClick={() => void loadMore()}
+          >
+            Load more
+          </button>
+        )}
+      </main>
+    </div>
+  );
 }

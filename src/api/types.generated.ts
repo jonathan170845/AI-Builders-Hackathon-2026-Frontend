@@ -1,0 +1,26 @@
+// Generated from contracts/openapi.json. Run pnpm run api:generate; do not edit.
+export type AnalysisAccepted = { "createdAt": string; "id": string; "status": "queued"; };
+export type AnalysisCompleted = { "createdAt": string; "id": string; "result": AnalysisResult; "stage": null; "status": "completed"; "updatedAt": string; };
+export type AnalysisFailed = { "createdAt": string; "error": AnalysisJobError; "id": string; "stage": AnalysisStage; "status": "failed"; "updatedAt": string; };
+export type AnalysisHistory = { "items": Array<AnalysisHistoryItem>; "nextCursor": string | null; };
+export type AnalysisHistoryItem = { "assumptionCount": number; "createdAt": string; "decision": string; "financialWarningCount": number; "id": string; "status": AnalysisStatus; "updatedAt": string; };
+export type AnalysisJobError = { "code": string; "message": string; };
+export type AnalysisPending = { "createdAt": string; "id": string; "stage": AnalysisStage; "status": "queued" | "processing"; "updatedAt": string; };
+export type AnalysisResult = { "assumptionCount": number; "assumptions": Array<Assumption>; "companyAnalogues": Array<CompanyAnalogue>; "date": string; "decisionTitle": string; "directEvidenceCoverage": string; "failureMechanisms": Array<FailureMechanism>; "financialResults": FinancialResults | null; "financialWarningCount": number; "financialWarnings": Array<FinancialWarningCode>; "id": string; "idxBenchmarks": Array<IdxBenchmark>; "sources": Array<SourceItem>; "summary": string; "validationExperiments": Array<ValidationExperiment>; };
+export type AnalysisStage = "queued" | "extracting_assumptions" | "retrieving_evidence" | "calculating_financials" | "reviewing_evidence" | "building_report";
+export type AnalysisStatus = "queued" | "processing" | "completed" | "failed";
+export type Assumption = { "assessment": "Insufficient Evidence" | "Partially Supported" | "Well Supported" | "Contradicted"; "evidenceGaps": Array<string>; "evidenceRefs": Array<string>; "id": string; "summary": string; "text": string; "validationExperiment": string; };
+export type CompanyAnalogue = { "context": string; "id": string; "name": string; "outcome": "Failed" | "Pivoted" | "Succeeded" | null; "relevance": string; "yearRange": string | null; };
+export type CreateAnalysisRequest = { "decision": string; "financialInputs"?: FinancialInputs | null; };
+export type ErrorDetail = { "code": string; "message": string; "requestId": string; };
+export type ErrorResponse = { "error": ErrorDetail; };
+export type FailureMechanism = { "description": string; "id": string; "source": string; "title": string; "year": number | null; };
+export type FinancialInputs = { "cashBalance": number; "deliveryCost": number; "driverCost": number; "fixedCost": number; "monthlyOrders": number; "promoSubsidy": number; "revenuePerOrder": number; "variableCostPerOrder": number; };
+export type FinancialResults = { "breakEvenOrders": number | null; "contributionMargin": number; "contributionMarginPct": number; "monthlyBurn": number; "operatingProfit": number; "runwayMonths": number | null; };
+export type FinancialWarningCode = "NEGATIVE_CONTRIBUTION_MARGIN" | "NEGATIVE_OPERATING_PROFIT" | "NON_POSITIVE_NET_REVENUE" | "LOW_RUNWAY" | "BREAK_EVEN_UNREACHABLE";
+export type IdxBenchmark = { "benchmark": string; "benchmarkMetric": "gross_margin"; "comparisonType": "directional"; "disclaimer": string; "metric": string; "sampleSize": number; "status": "Below Benchmark" | "At Benchmark" | "Above Benchmark"; "value": string; };
+export type LivenessResponse = { "status": "ok"; };
+export type ReadinessNotReadyResponse = { "checks": { [key: string]: "ready" | "not_ready"; }; "status": "not_ready"; };
+export type ReadinessReadyResponse = { "status": "ready"; };
+export type SourceItem = { "id": string; "title": string; "type": "Academic" | "Industry Report" | "News" | "Case Study" | "Financial Filing"; "url": string | null; "year": number | null; };
+export type ValidationExperiment = { "costLevel": "Low" | "Medium" | "High"; "description": string; "id": string; "linkedAssumptionId": string; "timeToRun": string; "title": string; };

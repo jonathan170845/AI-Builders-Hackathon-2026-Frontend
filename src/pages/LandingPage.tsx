@@ -1,7 +1,14 @@
 import { mockAnalysisResult } from '@/data/mockData';
 import EvidenceCoverage from '@/components/EvidenceCoverage';
 import Reveal from '@/components/Reveal';
-import { ArrowRight, BriefcaseBusiness, Clock3, Cpu, History, LineChart, ShieldCheck, Sparkles, TrendingDown } from 'lucide-react';
+import {
+  ArrowRight,
+  Cpu,
+  History,
+  LineChart,
+  ShieldCheck,
+  TrendingDown,
+} from 'lucide-react';
 import Footer from '@/components/Footer';
 import HomeFAQ from '@/components/HomeFAQ';
 import RotatingDecisionWord from '@/components/RotatingDecisionWord';
@@ -34,12 +41,6 @@ const capabilities = [
   },
 ];
 
-const productTags = [
-  { icon: Sparkles, label: 'AI-Powered', color: 'border-violet-400/30 bg-violet-400/10 text-violet-200' },
-  { icon: Clock3, label: 'On-Demand Analysis', color: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200' },
-  { icon: BriefcaseBusiness, label: 'Built for Business Decisions', color: 'border-amber-400/30 bg-amber-400/10 text-amber-200' },
-];
-
 export default function LandingPage({ onNavigate, onViewDemo }: LandingPageProps) {
   const total = mockAnalysisResult.assumptions.length;
   const supported = mockAnalysisResult.assumptions.filter((item) => item.assessment === 'Well Supported').length;
@@ -53,14 +54,6 @@ export default function LandingPage({ onNavigate, onViewDemo }: LandingPageProps
           </div>
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-12 md:pt-14 lg:pt-16 lg:pb-16">
             <div className="max-w-4xl mx-auto text-center animate-fade-in-up">
-              <ul aria-label="About Veritas" className="mb-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-                {productTags.map(({ icon: Icon, label, color }) => (
-                  <li key={label} className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-3 py-2 text-xs font-medium sm:px-4 sm:text-sm ${color}`}>
-                    <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />
-                    <span>{label}</span>
-                  </li>
-                ))}
-              </ul>
               <h1 className="font-display text-[clamp(1rem,5vw,3.75rem)] font-semibold tracking-tight leading-[1.15] text-white">
                 <span className="sr-only">Explore your next investment, before reality does.</span>
                 <span aria-hidden="true">
@@ -108,7 +101,7 @@ export default function LandingPage({ onNavigate, onViewDemo }: LandingPageProps
           </div>
         </section>
 
-        <Reveal><section className="report-paper border-y border-white/10 bg-[#edf1ee] text-[#142238]">
+        <Reveal><section className="report-paper border-y border-white/10 bg-[#b9c9d8] text-[#142238]">
           <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[0.9fr_1.4fr] lg:gap-20 lg:px-8 lg:py-16">
             <div>
               <div className="mb-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-800"><span className="h-px w-8 bg-teal-700" /> Beyond a gut feeling</div>

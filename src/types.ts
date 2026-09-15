@@ -18,8 +18,8 @@ export interface FinancialResults {
   contributionMarginPct: number;
   operatingProfit: number;
   monthlyBurn: number;
-  runwayMonths: number;
-  breakEvenOrders: number;
+  runwayMonths: number | null;
+  breakEvenOrders: number | null;
 }
 
 export interface Assumption {
@@ -28,6 +28,7 @@ export interface Assumption {
   assessment: AssessmentLevel;
   summary: string;
   evidenceGaps: string[];
+  evidenceRefs?: string[];
   validationExperiment: string;
 }
 
@@ -36,15 +37,15 @@ export interface FailureMechanism {
   title: string;
   description: string;
   source: string;
-  year: number;
+  year: number | null;
 }
 
 export interface CompanyAnalogue {
   id: string;
   name: string;
   context: string;
-  outcome: 'Failed' | 'Pivoted' | 'Succeeded';
-  yearRange: string;
+  outcome: 'Failed' | 'Pivoted' | 'Succeeded' | null;
+  yearRange: string | null;
   relevance: string;
 }
 
@@ -61,8 +62,8 @@ export interface SourceItem {
   id: string;
   title: string;
   type: 'Academic' | 'Industry Report' | 'News' | 'Case Study' | 'Financial Filing';
-  year: number;
-  url: string;
+  year: number | null;
+  url: string | null;
 }
 
 export interface IDXBenchmark {
@@ -70,6 +71,10 @@ export interface IDXBenchmark {
   value: string;
   benchmark: string;
   status: 'Below Benchmark' | 'At Benchmark' | 'Above Benchmark';
+  comparisonType?: 'directional';
+  benchmarkMetric?: 'gross_margin';
+  sampleSize?: number;
+  disclaimer?: string;
 }
 
 export interface AnalysisResult {
@@ -79,14 +84,14 @@ export interface AnalysisResult {
   assumptions: Assumption[];
   directEvidenceCoverage: string;
   financialWarnings: string[];
-  financialResults: FinancialResults;
+  financialResults: FinancialResults | null;
   failureMechanisms: FailureMechanism[];
   companyAnalogues: CompanyAnalogue[];
   validationExperiments: ValidationExperiment[];
   idxBenchmarks: IDXBenchmark[];
   sources: SourceItem[];
   date: string;
-  status: 'Completed' | 'Processing' | 'Failed';
+  status?: 'Completed' | 'Processing' | 'Failed';
   assumptionCount: number;
   financialWarningCount: number;
 }

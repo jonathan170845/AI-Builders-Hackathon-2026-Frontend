@@ -1,4 +1,5 @@
-import { Compass, History, Home, PlusCircle } from 'lucide-react';
+import { History, Home, PlusCircle } from 'lucide-react';
+import veritasLogo from '@/assets/veritas-logo.png';
 import type { Page } from '@/types';
 
 interface NavbarProps {
@@ -21,8 +22,12 @@ export default function Navbar({ currentPage, onNavigate }: NavbarProps) {
             onClick={() => onNavigate('landing')}
             className="flex items-center gap-2.5 group"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-300 shadow-lg shadow-cyan-500/20 transition-transform group-hover:scale-105">
-              <Compass className="h-5 w-5 text-navy-950" strokeWidth={2.5} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white p-1 shadow-sm transition-transform group-hover:scale-105">
+              <img
+                src={veritasLogo}
+                alt="Veritas logo"
+                className="h-full w-full object-contain"
+              />
             </div>
             <span className="font-display text-lg font-bold text-white tracking-tight">
               Veritas

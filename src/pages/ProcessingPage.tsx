@@ -1,71 +1,59 @@
 import { useEffect, useState } from 'react';
-import { Check, Circle, Loader2, ShieldCheck } from 'lucide-react';
+import { Check, Circle, Loader2 } from 'lucide-react';
+import { ApiError, errorMessage, getAnalysis } from '@/api/analyses';
+import type { AnalysisDetail, AnalysisStage } from '@/api/analyses';
+import ResultsPage from '@/pages/ResultsPage';
 
-interface ProcessingPageProps { onComplete: () => void; }
-
-const steps = ['Extracting assumptions', 'Finding historical failure analogues', 'Finding similar companies', 'Running financial stress test', 'Reviewing evidence', 'Building validation plan'];
-
-export default function ProcessingPage({ onComplete }: ProcessingPageProps) {
-  const [activeStep, setActiveStep] = useState(0);
-
+const steps: [AnalysisStage, string][] = [
+  ['queued', 'Waiting for an available worker'],
+  ['extracting_assumptions', 'Extracting assumptions'],
+  ['retrieving_evidence', 'Finding historical evidence and company context'],
+  ['calculating_financials', 'Running financial stress test'],
+  ['reviewing_evidence', 'Reviewing evidence'],
+  ['building_report', 'Building report'],
+];
+export default function ProcessingPage({ analysisId, onBack, onRetry }: { analysisId: string; onBack: () => void; onRetry: () => void }) {
+  const [detail, setDetail] = useState<AnalysisDetail | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    const timer = window.setInterval(() => setActiveStep((current) => Math.min(current + 1, steps.length)), 950);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (activeStep >= steps.length) {
-      const timer = window.setTimeout(onComplete, 650);
-      return () => window.clearTimeout(timer);
-    }
-  }, [activeStep, onComplete]);
-
-  const progress = Math.min((activeStep / steps.length) * 100, 100);
-
-  return (
-    <div className="min-h-screen pt-28 pb-10 px-4">
-      <main className="mx-auto w-full max-w-2xl text-center animate-fade-in-up motion-reduce:animate-none">
-        <div className="mx-auto flex items-center justify-center gap-5 sm:gap-7">
-          <div className="relative flex h-32 w-32 shrink-0 items-center justify-center sm:h-36 sm:w-36">
-            <div className="absolute inset-1 rounded-full border border-cyan-400/25 motion-safe:animate-pulse" />
-            <svg viewBox="0 0 144 144" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden="true">
-              <circle cx="72" cy="72" r="64" fill="none" stroke="rgba(148,163,184,0.25)" strokeWidth="5" />
-              <circle cx="72" cy="72" r="64" fill="none" stroke="#67e8f9" strokeWidth="5" strokeLinecap="round" pathLength="100" strokeDasharray="100" strokeDashoffset={100 - progress} className="transition-all duration-700 motion-reduce:transition-none" />
-            </svg>
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border border-cyan-300/20 bg-[#142238] shadow-lg sm:h-28 sm:w-28">
-              <ShieldCheck aria-hidden="true" className="h-12 w-12 text-cyan-300 sm:h-14 sm:w-14" strokeWidth={1.5} />
-            </div>
-          </div>
-          <div className="text-left">
-            <div className="text-3xl font-semibold tabular-nums text-white sm:text-4xl">{Math.round(progress)}%</div>
-            <p className="mt-1 text-sm font-medium text-cyan-200">Analysis progress</p>
-            <p className="mt-2 text-sm text-slate-200">{activeStep} of {steps.length} steps complete</p>
-          </div>
-        </div>
-        <div className="mt-6">
-          <h1 className="font-display text-3xl sm:text-4xl font-semibold text-white">Putting your decision under pressure.</h1>
-          <p className="mt-3 text-base leading-relaxed text-slate-200">We’re reviewing your assumptions, business context, and financial inputs. Keep this tab open to see the results.</p>
-        </div>
-        <div className="mt-7 glass-card p-5 sm:p-7 text-left">
-          <div className="flex items-center justify-between gap-3 mb-5">
-            <span className="text-base font-semibold text-white">Analysis pipeline</span>
-            <span className="text-sm text-cyan-200">{activeStep >= steps.length ? 'Ready' : 'In progress'}</span>
-          </div>
-          <div role="progressbar" aria-label="Analysis progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)} className="h-2 w-full overflow-hidden rounded-full bg-white/10">
-            <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-violet-400 transition-all duration-700 motion-reduce:transition-none" style={{ width: `${progress}%` }} />
-          </div>
-          <div className="mt-5 space-y-2">
-            {steps.map((step, index) => (
-              <div key={step} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 ${index === activeStep ? 'border border-cyan-400/25 bg-cyan-400/10 text-white' : 'border border-transparent text-slate-200'}`}>
-                {index < activeStep ? <Check aria-hidden="true" className="h-5 w-5 shrink-0 text-emerald-300" /> : index === activeStep ? <Loader2 aria-hidden="true" className="h-5 w-5 shrink-0 text-cyan-300 motion-safe:animate-spin" /> : <Circle aria-hidden="true" className="h-5 w-5 shrink-0 text-slate-400" />}
-                <span className="text-sm sm:text-base">{step}</span>
-                {index < activeStep && <span className="ml-auto text-xs sm:text-sm text-emerald-200">Complete</span>}
-              </div>
-            ))}
-          </div>
-        </div>
-        <p className="mt-5 text-sm leading-relaxed text-slate-200">Your results will appear automatically when the analysis is complete.</p>
-      </main>
-    </div>
-  );
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout>;
+    let delay = 1000;
+    setError(null);
+    const poll = async () => {
+      try {
+        const next = await getAnalysis(analysisId, controller.signal);
+        if (controller.signal.aborted) return;
+        setDetail(next);
+        setError(null);
+        if (next.status === 'completed' || next.status === 'failed') return;
+      } catch (reason) {
+        if (controller.signal.aborted) return;
+        setError(errorMessage(reason));
+        if (reason instanceof ApiError && reason.status >= 400 && reason.status < 500) return;
+      }
+      if (!controller.signal.aborted) {
+        timer = setTimeout(poll, Math.min(5000, delay * (0.9 + Math.random() * 0.2)));
+        delay = Math.min(5000, delay * 1.3);
+      }
+    };
+    void poll();
+    return () => { controller.abort(); clearTimeout(timer); };
+  }, [analysisId, attempt]);
+  if (detail?.status === 'completed') return <ResultsPage result={detail.result} onBack={onBack} />;
+  const failed = detail?.status === 'failed';
+  const active = detail ? steps.findIndex(([stage]) => stage === detail.stage) : -1;
+  return <div className="min-h-screen pt-28 pb-20 px-4"><main className="mx-auto max-w-2xl">
+    <button className="back-button mb-8" onClick={onBack}>Back to history</button>
+    <h1 className="font-display text-3xl text-white">{failed ? 'Analysis could not be completed' : 'Putting your decision under pressure.'}</h1>
+    <p className="mt-4 text-slate-300">You can reopen this page using its URL. Progress comes from the backend.</p>
+    {error && <div role="alert" className="glass-card p-5 mt-6 text-amber-200"><p>{error}</p><p className="mt-2">Your job may still be running.</p><button className="btn-secondary mt-4" onClick={() => setAttempt((value) => value + 1)}>Reconnect</button></div>}
+    {failed ? <div role="alert" className="glass-card p-6 mt-6"><p className="text-red-200">{detail.error.message}</p><p className="mt-2 text-sm text-slate-400">{detail.error.code}</p><button className="btn-primary mt-5" onClick={onRetry}>Try a new analysis</button></div> : <div className="glass-card p-6 mt-7" aria-live="polite">
+      <p className="mb-4 text-cyan-200">{detail ? (detail.status === 'queued' ? 'Queued' : 'Processing') : 'Loading analysis'}</p>
+      {steps.map(([stage, label], index) => <div key={stage} className={`flex gap-3 items-center p-3 ${index === active ? 'text-cyan-200' : 'text-slate-300'}`}>
+        {index < active ? <Check className="w-5 h-5 text-emerald-300" /> : index === active ? <Loader2 className="w-5 h-5 motion-safe:animate-spin" /> : <Circle className="w-5 h-5" />}<span>{label}</span>
+      </div>)}
+    </div>}
+  </main></div>;
 }

@@ -6,14 +6,14 @@ import type {
 } from '@/types';
 
 export const defaultFinancialInputs: FinancialInputs = {
-  monthlyOrders: 1000000,
-  revenuePerOrder: 50,
-  variableCostPerOrder: 35,
-  promoSubsidy: 10,
-  deliveryCost: 8,
-  fixedCost: 5000000,
-  driverCost: 3000000,
-  cashBalance: 500000000,
+  monthlyOrders: 0,
+  revenuePerOrder: 0,
+  variableCostPerOrder: 0,
+  promoSubsidy: 0,
+  deliveryCost: 0,
+  fixedCost: 0,
+  driverCost: 0,
+  cashBalance: 0,
 };
 
 export function computeFinancialResults(input: FinancialInputs): FinancialResults {
@@ -23,19 +23,19 @@ export function computeFinancialResults(input: FinancialInputs): FinancialResult
   const totalContributionMargin = contributionMarginPerOrder * input.monthlyOrders;
   const operatingProfit = totalContributionMargin - input.fixedCost - input.driverCost;
   const monthlyBurn = operatingProfit < 0 ? Math.abs(operatingProfit) : 0;
-  const runwayMonths = monthlyBurn > 0 ? input.cashBalance / monthlyBurn : Infinity;
+  const runwayMonths = monthlyBurn > 0 ? input.cashBalance / monthlyBurn : null;
   const breakEvenOrders =
     contributionMarginPerOrder > 0
       ? Math.ceil((input.fixedCost + input.driverCost) / contributionMarginPerOrder)
-      : Infinity;
+      : null;
 
   return {
     contributionMargin: totalContributionMargin,
     contributionMarginPct: netRevenuePerOrder > 0 ? (contributionMarginPerOrder / netRevenuePerOrder) * 100 : 0,
     operatingProfit,
     monthlyBurn,
-    runwayMonths: runwayMonths === Infinity ? Infinity : Math.round(runwayMonths * 10) / 10,
-    breakEvenOrders: breakEvenOrders === Infinity ? Infinity : breakEvenOrders,
+    runwayMonths: runwayMonths === null ? null : Math.round(runwayMonths * 10) / 10,
+    breakEvenOrders: breakEvenOrders === null ? null : breakEvenOrders,
   };
 }
 
